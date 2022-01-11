@@ -11,7 +11,6 @@ miFormulario.addEventListener('submit', ev => {
         if(el.name.length > 0)
             formData[el.name] = el.value
     }
-    console.log(formData)
 
     fetch( url + 'login',{
         method: 'POST',

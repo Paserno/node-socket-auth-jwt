@@ -180,3 +180,50 @@ const renovarToken = async( req, res = response ) => {
 }
 ````
 #
+### 4.- Validar Token - Frontend
+Esta vez modificaremos el archivo llamado `chat.js` que se creo, esto será para la validación del token que se alojará en el `localStorage`
+
+En `public/js/chat.js`
+* Inicializamos las variables que usaremos, como primero el __URL__, el usuario _(Tendra la información del usuario autenticado)_ en null al igual que el socket _(Información del socket)_.
+````
+const url = ( window.location.hostname.includes('localhost') )
+            ? 'http://localhost:8081/api/auth/'
+            : '';
+
+let usuario = null;
+let socket  = null;
+````
+* Creamos la función `validarJWT()` que validará el token del localStorage.
+* Primero obtenemos la información del localStorage y lo almacenamos en una variable.
+* Validamos el largo del Token en el caso que no sea igual a 10, nos madará al `index.html` con un mensaje de error.
+* Envaimos en una petición __fetch__ al URL, para enviar en el `headers` el token.
+* Recibimos la respuesta y desestructuramos en un objeto algunos elementos que recibiremos como el usuario y el token.
+* Luego actualizamos el Token que tenemos en el `localStorage`.
+* Finalmente le pasamos el contendo de `userDB` al usuario que estaba en `null`, para proximamente utilizarlo.
+````
+const validarJWT = async() =>{
+    const token = localStorage.getItem('token') || '';
+
+    if( token.length <= 10){
+        window.location = 'index.html';
+        throw new Error('No hay token en el servidor');
+    }
+
+    const resp = await fetch( url, {
+        headers: { 'x-token': token }
+    });
+
+    const { usuario: userDB, token:  tokenDB } = await resp.json();
+    localStorage.setItem('token', tokenDB);
+    usuario = userDB;
+}
+````
+* Creamos la función main y colocamos nuestro validador de token.
+* Y llamamos el `main()`.
+````
+const main = async() => {
+    await validarJWT();
+}
+main();
+````
+#
