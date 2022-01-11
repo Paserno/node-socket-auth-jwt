@@ -153,3 +153,30 @@ miFormulario.addEventListener('submit', ev => {
     }
 ````
 #
+### 3.- Renovar JWT - Servicio Backend
+Es necesario tener un servicio para renovar el Token, para acceder a la aplicación, para eso se hará un nuevo endpoint GET
+
+En `routes/auth.js`
+* Importamos `validarJWT` y `renovarToken` del controlador de auth que se creará a continuación.
+* Creamos el endpoint get, ponemos el __Middleware__ de `validarJWT`, en el caso que no haya problema ejecutará la función del controlador.
+````
+router.get('/', validarJWT, renovarToken );
+````
+En `controllers/auth.controllers.js`
+* Creamos la nueva función `renovarToken()` asincrona.
+* El __Middleware__ de `validarJWT` nos manda en la `req` el usuario, este hace una desencriptación del token, obteniendo el uid que es enviado y con la palabra secreta realiza la validación, en el caso que pase por las condiciones correctamente nos entregará el usuario de ese uid. 
+* Luego generamos un token nuevo con la función `generarJWT`, entregandole el id.
+* Finalmente le pasamos al __Frontend__ el usuario con todos sus datos y el nuevo token.
+````
+const renovarToken = async( req, res = response ) => {
+    const { usuario } = req;
+
+    const token = await generarJWT( usuario.id );
+
+    res.json({
+        usuario,
+        token
+    })
+}
+````
+#
