@@ -69,3 +69,87 @@ En `public/js/chat.js`
 const socket = io();
 ````
 #
+### 2.- Diseño de login y su funcionamiento - Frontend
+Extraemos el codigo que teniamos en el html sobre el boton de Google sign-in, para agregarlo en su propio archivo `auth.js` que se creo, para hacer las validaciones
+
+En `public/index.html`
+* Creamos en el HTML unos `div` donde dejar el login manual.
+* Creamos un form para almacenar unos textbox y un button con clases propias de boostrap _(boton con tipo submit)_.
+````
+<div class="col-sm-6">
+        <h1>Login Manual</h1>
+        <hr>
+
+        <form class="d-grid ">
+            <input type="text" name="correo" class="form-control mb-2" placeholder="Correo">
+            <input type="text" name="password" class="form-control mb-2" placeholder="Contraseña">
+
+            <button type="submit" class="btn btn-primary">
+                Ingresar
+            </button>
+
+        </form>
+</div>
+````
+En `public/js/auth.html`
+* Hacemos referencia al form en el HTML.
+* Creamos una constante con el URL de la aplicación, verificando si en la url se encuentra el localhost, en el caso que no se pondrá la URL donde se subirá el proyecto.
+````
+const miFormulario = document.querySelector('form');
+const url = ( window.location.hostname.includes('localhost') )
+            ? 'http://localhost:8081/api/auth/'
+            : '';
+````
+* Creamos el evento submit en el form, usando `.preventDefautl()` para no recargar la pagina.
+* Creamos una constante vacía, ademas de un for para leer todos los elementos del formulario, hacemos una condición de que si no tiene `name` no se leerá, en este caso no leerá el boton, si no que los 2 textbox.
+* Posterior a esto hacemos un __POST__ con ayuda del __fetch__, le enviamos los elementos del `formData`.
+* Realizamos 2 `.then`, el primero para entrar a la restpuesta `.json()` y la segunda promesa para treaer el mensaje y token, en el caso que venga el mensaje, se enviará como un `console.warn`, en el caso que venga solo el token se guardará en el `localStorage()`.
+* En el caso que salga un error, lo recibimos en el `.catch`.
+````
+miFormulario.addEventListener('submit', ev => {
+    ev.preventDefault();
+    const formData = {};
+
+    for( let el of miFormulario.elements ){
+        if(el.name.length > 0)
+            formData[el.name] = el.value
+    }
+
+    fetch( url + 'login',{
+        method: 'POST',
+        body: JSON.stringify( formData ),
+        headers:{ 'Content-Type': 'application/json' }
+    })
+    .then( resp => resp.json())
+    .then( ({msg, token}) => {
+        if(msg){
+            return console.warn( msg );
+        }
+        localStorage.setItem('token', token);
+    })
+    .catch( err => {
+        console.log(err)
+    })
+});
+````
+* Aquí solo copiamos el script que estaba en el HTML y en vez de mandar el URL completo, enviamos la constante que se creo, mas `google` que es la dirección exacta del POST de __Google sing-in__
+````
+ function handleCredentialResponse(response) {
+
+    const body = { id_token: response.credential }
+
+    fetch( url + 'google' ,{
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(body)
+    })
+        .then( resp => resp.json())
+        .then( ({token}) => {
+            localStorage.setItem( 'token', token )
+        })
+        .catch(console.warn);
+    }
+````
+#
