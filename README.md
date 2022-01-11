@@ -227,3 +227,26 @@ const main = async() => {
 main();
 ````
 #
+### 4,5.- Corrección de boton Sign-out de Google Sing-in - Frontend
+Se corrigió el error de que cuando apretabamos el boton de __Desconectar__ no se desvinculaba la cuenta de __Google__
+
+En `public/js/auth.js`
+* Ya que habiamos modificado el fetch, que solo recibiremos el __token__ en la segunda promesa, ahora se corrige y traemos al usuario tambien, para que en el boton como lo habiamos dejado, detecte el correo y lo elimine del `localStorage` como lo teniamos originalmente.
+````
+fetch( url + 'google', {
+        method: 'POST',
+        headers: {
+            'Content-Type':'application/json'
+        },
+        body: JSON.stringify(body)
+    })
+        .then( r => r.json())
+        .then( ({token, usuario}) => {
+            localStorage.setItem( 'email', usuario.correo )
+            localStorage.setItem( 'token', token )
+
+        })
+        .catch(console.warn);
+````
+Este error nace de que el boton de remover el localStorage, busca un campo llamado `email` y como no existia antes de este punto, no se podia cerrar la sesión.
+#

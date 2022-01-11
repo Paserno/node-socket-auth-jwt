@@ -35,17 +35,19 @@ miFormulario.addEventListener('submit', ev => {
     // Google Token : ID_TOKEN
     // console.log('id_token', response.credential);
     const body = { id_token: response.credential }
-
-    fetch( url + 'google' ,{
+    
+    fetch( url + 'google', {
         method: 'POST',
         headers: {
             'Content-Type':'application/json'
         },
         body: JSON.stringify(body)
     })
-        .then( resp => resp.json())
-        .then( ({token}) => {
+        .then( r => r.json())
+        .then( ({token, usuario}) => {
+            localStorage.setItem( 'email', usuario.correo )
             localStorage.setItem( 'token', token )
+
         })
         .catch(console.warn);
     }
@@ -59,7 +61,7 @@ button.onclick = () => {
 
     google.accounts.id.revoke( localStorage.getItem( 'email' ), done =>{
         localStorage.clear();
-        location.reload();
+        // location.reload();
     });
 }
 
