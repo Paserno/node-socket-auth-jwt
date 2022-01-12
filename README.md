@@ -406,3 +406,64 @@ const btnSalir   = document.querySelector('#btnSalir');
     })
 ````
 #
+### 7.- Modelo para Chat - Usuarios Conectados y Mensajes
+Creamos la clase que manejará el chat de mensajes, ademas de crear el modelo de mensaje para definir la estructur que tendra
+
+Creamos el archivo `models/chat.js`
+* Creamos la clase que manejará la esctructura de los mensajes con sus propiedades.
+* El constructor que recibira como parametros el uid, nombre y mensaje.
+````
+class Mensaje {
+    constructor( uid, nombre, mensaje ) {
+         this.uid     = uid;
+         this.nombre  = nombre;
+         this.mensaje = mensaje;
+    }
+}
+````
+* Creamos la clase `ChatMensaje` con el constructor, que tendrá el parametro de mensajes como un arreglo y de usuarios que recibirá objetos. 
+* Exportar la clase `ChatMensaje`.
+````
+class ChatMensaje {
+
+    constructor() {
+
+        this.mensajes = [];
+        this.usuarios = {};
+    }
+    ...
+}
+````
+* Creamos dos __Get__, el primero es de los ultimos 10 mensajes, estos los tendrá de la propiedad `this.mensaje`, el que con el metodo `.splice()` extraerá los primeros 10 elementos del arreglo y lo retornará.
+* El segundo __Get__ `usuariosArr` lo que hará es retornar los elementos de `this.usuarios` como un arreglo _(Arreglo de objetos)_.
+````
+get ultimos10() {
+        this.mensajes = this.mensajes.splice(0,10);
+        return this.mensajes;
+    }
+
+    get usuariosArr() {
+        return Object.values( this.usuarios );
+    }
+````
+* Creamos diferentes metodos para la clase `ChatMensaje`, el primero es `enviarMensaje` que recibirá diferentes parametros como `uid`, `nombre` y `mensaje` que se creará una nueva instancia de la clase `Mensaje` y se agregará al arreglo de `this.mensajes`.
+* Segundo metodo identifica cuando un usuario se conecto, recibiendo el usuario.
+* El tercer metodo, es igual al segundo con la diferencia que eliminará al usuario que se le pase por el parametro.
+````
+enviarMensaje( uid, nombre, mensaje ) {
+        this.mensajes.unshift(
+            new Mensaje(uid, nombre, mensaje)
+        );
+}
+
+conectarUsuario( usuario ) {
+        this.usuarios[usuario.id] = usuario
+}
+
+desconectarUsuario( id ) {
+        delete this.usuarios[id];
+}
+````
+En `models/index.js`
+* Se agrego la importación de `ChatMensaje` y la exportacion tambien.
+#
