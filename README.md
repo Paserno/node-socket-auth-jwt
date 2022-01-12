@@ -250,3 +250,84 @@ fetch( url + 'google', {
 ````
 Este error nace de que el boton de remover el localStorage, busca un campo llamado `email` y como no existia antes de este punto, no se podia cerrar la sesión.
 #
+### 5.- Validar socket con JWT - Backend
+Se crearán validadores en la parte del __Backend__, para poder aceptar el socket con ayuda del JWT
+
+En `public/js/auht.js`
+* Agregamos el siguiente codigo, en el evento del boton `submit`, especificamente en la segunda promesa.
+* Ademas del fetch del Google Sign-in, en la segunda promesa.
+````
+window.location = 'chat.html';
+````
+En `public/js/chat.js`
+* Creamos la función `conectarSocket()`
+````
+const conectarSocket = async() => {
+    const socket = io({
+        'extraHeaders': {
+            'x-token': localStorage.getItem('token')
+        }
+    });
+}
+````
+* Al final de la función `validarJWT()` llamamos a la nueva función recien creada, una vez que haya pasado todas las validaciónes se ejecutará.
+````
+await conectarSocket();
+````
+En `helpers/generar-jwt.js`, aquí generamos el nuevo validador que se utilizará
+* Importamos el modelo de usuario.
+````
+const { Usuario } = require('../models');
+````
+* Creamos un nuevo validador llamado `comprobarJWT()` asincrono, lo encerramos en un Try-Catch por si se presentan errores.
+* Validamos el tamaño del token que se manden por los parametros, en el caso que sea menor a 10, se retornará un `null`.
+* En el caso de tener un token correcto, se extraerá el uid, para luego buscar el usuario con ese id.
+* En el caso que exista el usuario, se buscará el que tenga el estado en `true`, en el caso contrarió se retornara `null`.
+* Si se dispara un error se retornará un `null` y finalmente importamos la función.
+````
+const comprobarJWT = async( token = '') => {
+
+    try {
+        
+        if( token.length < 10){
+            return null;
+        }
+
+        const { uid } = jwt.verify( token, process.env.JWT_KEY );
+        const usuario = await Usuario.findById( uid );
+
+        if ( usuario ) {
+            if ( usuario.estado ) {
+                return usuario;
+            } else {
+                return null;
+            }
+        }else {
+            return null;
+        }
+
+    } catch (error) {
+        return null;
+    }
+}
+````
+En `sockets/controller.js`
+* Importamos el validador que creamos.
+````
+const { comprobarJWT } = require("../helpers");
+````
+* En nuestra función le mandamos el `x-token` que lo extraemos de `socket.handshake.headers`.
+* Si no existe un token, se desconectará el socket.
+* En el caso que exista el token, mostrará un mensaje por consola de que se conecto un usuario.
+````
+const socketController = async( socket ) => {
+
+    const usuario = await comprobarJWT(socket.handshake.headers['x-token']);
+    if( !usuario ){
+        return socket.disconnect();
+    }
+
+    console.log('Se conecto', usuario.nombre);
+}
+````
+#

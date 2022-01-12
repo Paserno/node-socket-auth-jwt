@@ -23,6 +23,7 @@ miFormulario.addEventListener('submit', ev => {
             return console.warn( msg );
         }
         localStorage.setItem('token', token);
+        window.location = 'chat.html';
     })
     .catch( err => {
         console.log(err)
@@ -45,8 +46,9 @@ miFormulario.addEventListener('submit', ev => {
     })
         .then( r => r.json())
         .then( ({token, usuario}) => {
-            localStorage.setItem( 'email', usuario.correo )
-            localStorage.setItem( 'token', token )
+            localStorage.setItem( 'email', usuario.correo );
+            localStorage.setItem( 'token', token );
+            window.location = 'chat.html';
 
         })
         .catch(console.warn);
@@ -61,7 +63,7 @@ button.onclick = () => {
 
     google.accounts.id.revoke( localStorage.getItem( 'email' ), done =>{
         localStorage.clear();
-        // location.reload();
+        location.reload();
     });
 }
 
