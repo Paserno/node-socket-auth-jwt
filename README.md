@@ -331,3 +331,78 @@ const socketController = async( socket ) => {
 }
 ````
 #
+### 6.- Preparando HTML y JS para chat - Frontend
+Creamos elementos HTML con ayuda de las clases de boostrap, ademas de preparar socket que se emitiran desde el servidor.
+
+En `public/chat.html`
+* Creamos inputs para el uid y el mensaje, el espacio para el chat y usuarios conectados, finalmente creamos el boton, cada uno de estos elementos le agregamos un ID, para hacer referencia en el archivo JS.
+````
+  <div class="row mt-5">
+        <div class="col-sm-6">
+            <h3>Enviar Mensaje</h3>
+            <hr>
+            <input type="text"
+                   id="txtUid"
+                   class="form-control mb-2"
+                   placeholder="uid"
+                   autocomplete="off">
+
+            <input type="text"
+                   id="txtMensaje"
+                   class="form-control mb-2"
+                   placeholder="Mensaje"
+                   autocomplete="off">
+
+            <h3>Usuarios</h3>
+            <hr>
+            <ul id="ulUsuario">
+
+            </ul>
+        </div>
+
+        <div class="col-sm-6">
+            <h3>Chat Completo</h3>
+            <hr>
+            <ul id="ulMensaje">
+
+            </ul>
+        </div>
+    </div>
+    
+    <button id="btnSalir" class="btn btn-outline-danger">
+        Logout
+    </button>
+````
+
+En `public/js/chat.js`
+* Hacemos referencias a los IDs de los elementos creados en el HTML.
+````
+const txtUid     = document.querySelector('#txtUid');
+const txtMensaje = document.querySelector('#txtMensaje');
+const ulUsuario  = document.querySelector('#ulUsuario');
+const ulMensaje  = document.querySelector('#ulMensaje');
+const btnSalir   = document.querySelector('#btnSalir');
+````
+* En la función `conectarSocket()`, agregamos algunos socket, el de conectar, desconectar, recibir mensaje, usuarios activos y mensajes privados.
+````
+ socket.on('connect', () => {
+        console.log('Socket Online');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Socket Offline');
+    });
+
+    socket.on('recibir-mensajes', () => {
+        //TODO:
+    });
+
+    socket.on('usuarios-activos', () => {
+        //TODO:
+    });
+
+    socket.on('mensaje-privado', () => {
+        //TODO:
+    })
+````
+#

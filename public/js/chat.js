@@ -1,11 +1,19 @@
-
-
 const url = ( window.location.hostname.includes('localhost') )
             ? 'http://localhost:8081/api/auth/'
             : '';
 
 let usuario = null;
 let socket  = null;
+
+// Referencias HTML
+const txtUid     = document.querySelector('#txtUid');
+const txtMensaje = document.querySelector('#txtMensaje');
+const ulUsuario  = document.querySelector('#ulUsuario');
+const ulMensaje  = document.querySelector('#ulMensaje');
+const btnSalir   = document.querySelector('#btnSalir');
+
+
+
 
 // Validar el token del localStorage
 const validarJWT = async() =>{
@@ -31,11 +39,31 @@ const validarJWT = async() =>{
 
 const conectarSocket = async() => {
 
-    const socket = io({
+    socket = io({
         'extraHeaders': {
             'x-token': localStorage.getItem('token')
         }
     });
+
+    socket.on('connect', () => {
+        console.log('Socket Online');
+    });
+
+    socket.on('disconnect', () => {
+        console.log('Socket Offline');
+    });
+
+    socket.on('recibir-mensajes', () => {
+        //TODO:
+    });
+
+    socket.on('usuarios-activos', () => {
+        //TODO:
+    });
+
+    socket.on('mensaje-privado', () => {
+        //TODO:
+    })
 
 }
 
