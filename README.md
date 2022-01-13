@@ -579,3 +579,40 @@ socket.on('recibir-mensajes', (payload) => {
     });
 ````
 #
+### 11.- Hisorial de mensajes en el HTML
+Ahora se hará otra función de dibujado, esta vez de los mensajes
+
+En `public/js/chat.js`
+* Creamos la función `dibujarMensajes()` que recibirá como parametro mensajes.
+* Realizamos el dibujado con el `forEach` de los elementos que se mostrarán en la pantalla, en este caso el nombre del usuario y mensaje.
+````
+const dibujarMensajes = ( mensajes = [] ) =>{
+
+    let mensajeHtml = '';
+    mensajes.forEach( ({ nombre, mensaje }) => {
+
+        mensajeHtml += `
+        <li >
+            <p>
+                <span class="text-primary"> ${ nombre } </span>
+                <span>${ mensaje }</span>
+            </p>
+        </li>
+        `;
+    });
+
+    ulMensaje.innerHTML = mensajeHtml;
+}
+````
+En `sockets/controller.js`
+* En el controlador del socket `socketController` lo ponemos al inicio cuando los usuario se conecten, emitimos los mensajes desde el servidor.
+````
+socket.emit('recibir-mensajes', chatMensaje.ultimos10);
+````
+En `public/js/chat.js`
+* Optimizamos el socket `recibir-mensajes` y `usuarios-activos` para que se vea mas limpio, y para que hagan los dibujados.
+````
+socket.on('recibir-mensajes', dibujarMensajes);
+socket.on('usuarios-activos', dibujarUsuario);
+````
+#
