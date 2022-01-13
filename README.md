@@ -616,3 +616,41 @@ socket.on('recibir-mensajes', dibujarMensajes);
 socket.on('usuarios-activos', dibujarUsuario);
 ````
 #
+### 12.- Sala en Socket, para los Mensajes Privados
+Ahora es necesario habilitar los mensajes privados a traves de los socket
+
+En `sockets/controller.js`
+* Lo que hacemos es que cuando un usuario se conecta, se conecta a una sala especial.
+````
+socket.join( usuario.id );
+````
+* En caso que recibamos el `uid`, esto será un mensaje privado hacia un usuario, por esto creamos la condición.
+* Gracias a `socket.to()` se puede emitir a una sala asociada al `uid` recibido, en este caso se enviará el mensaje y el nombre del usuario.
+* En el caso que no se mande el `uid` todo seguirá igual, enviando el mensaje en la sala publica. 
+````
+socket.on('enviar-mensaje', ({ uid, mensaje }) =>{
+    
+        if ( uid ) {
+            socket.to( uid ).emit('mensaje-privado',{ de: usuario.nombre, mensaje });
+        }else{
+            chatMensaje.enviarMensaje(usuario.id, usuario.nombre, mensaje);
+            io.emit('recibir-mensajes', chatMensaje.ultimos10);
+        }
+    })
+````
+En `public/js/chat.js`
+* Escuchamos en el socket `mensaje-privado`, y recibimos el payload, para emitirlo por consola.
+````
+socket.on('mensaje-privado', (payload) => {
+        console.log('Privado:', payload)
+    })
+````
+* Creamos el evento del boton, para salir de la sesión.
+* Lo que hace el boton es redireccionar al index y limpiar el `localStorage`.
+````
+btnSalir.addEventListener('click', (ev)=> {
+    window.location = '/';
+    localStorage.clear();
+})
+````
+#
