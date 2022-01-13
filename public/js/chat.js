@@ -57,7 +57,8 @@ const conectarSocket = async() => {
         //TODO:
     });
 
-    socket.on('usuarios-activos', () => {
+    socket.on('usuarios-activos', (payload) => {
+        console.log(payload);
         //TODO:
     });
 

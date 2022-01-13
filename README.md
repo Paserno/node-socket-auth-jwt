@@ -467,3 +467,41 @@ desconectarUsuario( id ) {
 En `models/index.js`
 * Se agrego la importación de `ChatMensaje` y la exportacion tambien.
 #
+### 8.- Listado de Usuarios Conectados
+Habilitaremos el socket de usuario activo, para saber cuando un usuario esta o no conectado, pero primero hay que habilitar el servidor que emita el mensaje a todos, para esto se hará una configuración en el servidor
+
+En `models/server.js`
+* En el metodo `Sockets()`, agregamos una función de flecha en la conexión del socket y recibiremos el socket, pero llamaremos el `this.io`
+````
+this.io.on('connection', ( socket ) => socketController(socket, this.io));
+````
+En `sockets/controller.js`
+* Ahora modificamos nuestro controlador del socket, recibiendo en los parametros el socket y el io, que este ultimo nos servirá para emitir mensajes a todos los socket que esten escuchando, sin necesidad del `broadcast`.
+````
+const socketController = async( socket, io ) => {...}
+````
+* Importamos la clase `ChatMensaje` y iniciamos una nueva instancia de este.
+````
+const { ChatMensaje } = require("../models");
+
+const chatMensaje = new ChatMensaje
+````
+* Usamos el metodo `conectarUsuario` para registrar su conexión y emitimos en el socket `usuarios-activos` los usuarios que esten conectados.
+* El segundo socket es para detectar cuando un usuario se desconecta, de esta manera lo podemos registrar en el metodo `desconectarUsuario()` por el `usuario.id`, para luego emitir el cambio, que alguien se desconecto.
+````
+chatMensaje.conectarUsuario( usuario );
+    io.emit('usuarios-activos', chatMensaje.usuariosArr)
+
+socket.on('disconnect', () => {
+        chatMensaje.desconectarUsuario( usuario.id );
+        io.emit('usuarios-activos', chatMensaje.usuariosArr)
+    })
+````
+En `public/js/chat.js`
+* Para ver los cambios en el Frontend, recibiremos el payload y lo mostraremos, de esta forma vemos los usuarios conectados.
+````
+socket.on('usuarios-activos', (payload) => {
+        console.log(payload);
+    });
+````
+#
