@@ -58,7 +58,7 @@ const conectarSocket = async() => {
     });
 
     socket.on('usuarios-activos', (payload) => {
-        console.log(payload);
+        dibujarUsuario(payload);
         //TODO:
     });
 
@@ -68,6 +68,24 @@ const conectarSocket = async() => {
 
 }
 
+const dibujarUsuario = ( usuarios = [] ) =>{
+
+    let usersHtml = '';
+    usuarios.forEach( ({ nombre, uid }) => {
+
+        usersHtml += `
+        <li class="text-success">
+            <p>
+                <h5 class="text-success"> ${ nombre } </h5>
+                <span class="fs-6 text-muted">${ uid }</span>
+            </p>
+        </li>
+        `;
+    });
+
+    ulUsuario.innerHTML = usersHtml;
+
+}
 
 
 

@@ -505,3 +505,36 @@ socket.on('usuarios-activos', (payload) => {
     });
 ````
 #
+### 9.- Mostrar en el HTML los Usuarios Conectados
+Ya que en el anterior punto podemos recibir a traves del payload los usuarios que esten conectado, ahora falta mostrarlos por pantalla con el uso del DOM, para esto es necesario lo siguiente 
+
+En `public/js/chat.js`
+* Crear una función que haga el dibujado de los usuarios conectados.
+* Creamos una varibale que recibirá el dibujado, y utulizamos un `forEach` para hacer los cambios, desestructuramos el `nombre` y el `uid`.
+* Agregamos la lista con el contenido a mostrar.
+* Luego hacemos referencia al `ulUsuario` para agregar nuestro dibujado.
+````
+const dibujarUsuario = ( usuarios = [] ) =>{
+    let usersHtml = '';
+    usuarios.forEach( ({ nombre, uid }) => {
+
+        usersHtml += `
+        <li class="text-success">
+            <p>
+                <h5 class="text-success"> ${ nombre } </h5>
+                <span class="fs-6 text-muted">${ uid }</span>
+            </p>
+        </li>
+        `;
+    });
+
+    ulUsuario.innerHTML = usersHtml;
+}
+````
+* Agregamos en el socket `usuarios-activos`, nuestra función que hara el dibujado.
+````
+socket.on('usuarios-activos', (payload) => {
+        dibujarUsuario(payload);
+    });
+````
+#
