@@ -1,5 +1,6 @@
-
-# RestServer + WebSocket
+> __Elemento Anterior 👀:__ __[Aplicación de Ticket con Socket.io](https://github.com/Paserno/node-socket-ticket)__
+#
+# Socket con Autenticación con JWT
 Reutilización del RestServer y agregar contenido de Socket.io, validando los socket con JWT, ademas de envio de mensajes con Socket. Utilizamos los siguientes elementos: 
 
 * __[REST Server con Node.js y Express](https://github.com/Paserno/node-express-restserver-fst)__
