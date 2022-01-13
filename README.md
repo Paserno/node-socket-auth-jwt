@@ -538,3 +538,44 @@ socket.on('usuarios-activos', (payload) => {
     });
 ````
 #
+### 10.- Envión de Mensajes a Toda la Sala de Chat
+Se hará el evento del input, para emitir el socket del mensaje y recibirlo en el __Backend__, para luego emitirlo a todos
+
+En `public/js/chat.js` 
+* Creamos el evento `keyup` en el input.
+* Almacenamos el valor del input del mensaje y del uid.
+* Si el navegador detecta cualquier evento que no sea el __enter__ del teclado retornará y en el caso que el largo del mensaje sea igual a 0, tambien retornará.
+* Una vez pase las 2 condiciones, se emitira el socket con el mensaje y el uid.
+* Finalmente cuando este por terminar el evento el valor del input estará vacío.
+````
+txtMensaje.addEventListener('keyup', ({ keyCode }) => {
+
+    const mensaje = txtMensaje.value;
+    const uid     = txtUid.value;
+    
+    if( keyCode !== 13 ){ return; }
+    if( mensaje.length === 0 ){ return; }
+
+    socket.emit('enviar-mensaje', { mensaje, uid });
+    txtMensaje.value = '';
+});
+````
+En `sockets/controller.js`
+* Se escuchará el socket `enviar-mensaje` en el servidor, y se recibirá los valores que fueron enviados.
+* Para luego llamar el metodo `enviarMensaje()` que le enviaremos por parametros el id, nombre y mensaje del usuario.
+* Finalmente emitiremos el socket `recibir-mensajes` con el metodo get `ultimos10` que mostrará los ultimos 10 mensajes.
+````
+socket.on('enviar-mensaje', ({ uid, mensaje }) =>{
+        
+        chatMensaje.enviarMensaje(usuario.id, usuario.nombre, mensaje);
+        io.emit('recibir-mensajes', chatMensaje.ultimos10);
+    })
+````
+En `public/js/chat.js`
+* Finalmente recibiremos el payload del socket `recibir-mensajes` que escuchamos en el Frontend.
+````
+socket.on('recibir-mensajes', (payload) => {
+        console.log(payload);
+    });
+````
+#

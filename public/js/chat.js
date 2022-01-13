@@ -53,7 +53,8 @@ const conectarSocket = async() => {
         console.log('Socket Offline');
     });
 
-    socket.on('recibir-mensajes', () => {
+    socket.on('recibir-mensajes', (payload) => {
+        console.log(payload);
         //TODO:
     });
 
@@ -86,6 +87,18 @@ const dibujarUsuario = ( usuarios = [] ) =>{
     ulUsuario.innerHTML = usersHtml;
 
 }
+
+txtMensaje.addEventListener('keyup', ({ keyCode }) => {
+
+    const mensaje = txtMensaje.value;
+    const uid     = txtUid.value;
+    
+    if( keyCode !== 13 ){ return; }
+    if( mensaje.length === 0 ){ return; }
+
+    socket.emit('enviar-mensaje', { mensaje, uid });
+    txtMensaje.value = '';
+});
 
 
 
